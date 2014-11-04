@@ -8,11 +8,11 @@
 この目的を達するために、一つの [アクション](structure-controllers.md) と 二つの [ビュー](structure-views.md) を作成する以外に、
 一つの [モデル](structure-models.md) をも作成します。
 
-このチュートリアルを通じて、次のことを学びます:
+このチュートリアルを通じて、次のことをする方法を学びます:
 
-* フォームを通じてユーザが入力したデータを表す [モデル](structure-models.md) を作成する方法
-* 入力されたデータを検証する規則を宣言する方法
-* [ビュー](structure-views.md) の中で HTML フォームを構築する方法
+* フォームを通じてユーザが入力したデータを表す [モデル](structure-models.md) を作成する
+* 入力されたデータを検証する規則を宣言する
+* [ビュー](structure-views.md) の中で HTML フォームを構築する
 
 
 モデルを作成する<a name="creating-model"></a>
@@ -172,7 +172,7 @@ use yii\widgets\ActiveForm;
 ```
 
 このビューは HTML フォームを構築するのに、[[yii\widgets\ActiveForm|ActiveForm]] と呼ばれる強力な [ウィジェット](structure-widgets.md) を使います。
-ウィジェットの `begin()` メソッドと `end()` メソッドが、それぞれ、フォームの開始タグと終了タグを表示します。
+ウィジェットの `begin()` メソッドと `end()` メソッドが、それぞれ、フォームの開始タグと終了タグをレンダリングします。
 この二つのメソッドの呼び出しの間に、[[yii\widgets\ActiveForm::field()|field()]] メソッドによって入力フィールドが作成されます。
 最初の入力フィールドは "name" のデータ、第二の入力フィールドは "email" のデータのためのものです。
 入力フィールドの後に、[[yii\helpers\Html::submitButton()]] メソッドが呼ばれて、送信ボタンを生成しています。
