@@ -140,7 +140,7 @@ For example,
 > Info: If a module ID is the same as an application component ID, the application component will be used during
   the bootstrapping process. If you want to use the module instead, you may specify it using an anonymous function
   like the following:
->```php
+> ```php
 [
     function () {
         return Yii::$app->getModule('user');
@@ -588,6 +588,8 @@ followed by modules (if any), and finally applications.
 
 
 ## Application Lifecycle <a name="application-lifecycle"></a>
+
+![Application Lifecycle](images/application-lifecycle.png)
 
 When an [entry script](structure-entry-scripts.md) is being executed to handle a request,
 an application will undergo the following lifecycle:

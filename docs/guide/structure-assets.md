@@ -21,9 +21,9 @@ JavaScript files in the bundle in the rendered Web page.
 ## Defining Asset Bundles <a name="defining-asset-bundles"></a>
 
 Asset bundles are specified as PHP classes extending from [[yii\web\AssetBundle]]. The name of a bundle is simply
-its corresponding PHP class name which should be [autoloadable](concept-autoloading.md). In an asset bundle class,
-you would typically specify where the assets are located, what CSS and JavaScript files the bundle contains, and
-how the bundle depends on other bundles.
+its corresponding fully qualified PHP class name (without the leading backslash). An asset bundle class should
+be [autoloadable](concept-autoloading.md). It usually specifies where the assets are located, what CSS and 
+JavaScript files the bundle contains, and how the bundle depends on other bundles.
 
 The following code defines the main asset bundle used by [the basic application template](start-installation.md):
 
@@ -51,7 +51,7 @@ class AppAsset extends AssetBundle
 ```
 
 The above `AppAsset` class specifies that the asset files are located under the `@webroot` directory which
-is corresponding to the URL `@web`; the bundle contains a single CSS file `css/site.css` and no JavaScript file;
+corresponds to the URL `@web`; the bundle contains a single CSS file `css/site.css` and no JavaScript file;
 the bundle depends on two other bundles: [[yii\web\YiiAsset]] and [[yii\bootstrap\BootstrapAsset]]. More detailed
 explanation about the properties of [[yii\web\AssetBundle]] can be found in the following:
 
@@ -104,7 +104,7 @@ Assets, based on their location, can be classified as:
 When defining an asset bundle class, if you specify the [[yii\web\AssetBundle::sourcePath|sourcePath]] property,
 it means any assets listed using relative paths will be considered as source assets. If you do not specify this property,
 it means those assets are published assets (you should therefore specify [[yii\web\AssetBundle::basePath|basePath]] and
-[[yii\web\AssetBundle::baseUrl|baseUrl]] to let Yii know where they are located.)
+[[yii\web\AssetBundle::baseUrl|baseUrl]] to let Yii know where they are located).
 
 It is recommended that you place assets belonging to an application in a Web directory to avoid the unnecessary asset
 publishing process. This is why `AppAsset` in the prior example specifies [[yii\web\AssetBundle::basePath|basePath]]
@@ -116,13 +116,13 @@ property when defining asset bundle classes for them.
 
 > Note: Do not use `@webroot/assets` as the [[yii\web\AssetBundle::sourcePath|source path]].
   This directory is used by default by the [[yii\web\AssetManager|asset manager]] to save the asset files
-  published from their source location. Any content in this directory are considered temporarily and may be subject
+  published from their source location. Any content in this directory is considered temporarily and may be subject
   to removal.
 
 
 ### Asset Dependencies <a name="asset-dependencies"></a>
 
-When you include multiple CSS or JavaScript files in a Web page, they have to follow certain orders to avoid
+When you include multiple CSS or JavaScript files in a Web page, they have to follow a certain order to avoid
 overriding issues. For example, if you are using a jQuery UI widget in a Web page, you have to make sure
 the jQuery JavaScript file is included before the jQuery UI JavaScript file. We call such ordering the dependencies
 among assets.
@@ -146,7 +146,7 @@ they are called by the [view](structure-views.md) to include CSS and JavaScript 
   use different options for different files, you should create separate asset bundles, and use one set of options
   in each bundle.
 
-For example, to conditionally include a CSS file for browsers that are IE9 or above, you can use the following option:
+For example, to conditionally include a CSS file for browsers that are IE9 or below, you can use the following option:
 
 ```php
 public $cssOptions = ['condition' => 'lte IE9'];
@@ -160,7 +160,7 @@ This will cause a CSS file in the bundle to be included using the following HTML
 <![endif]-->
 ```
 
-To wrap link tag with `<noscript>` the following can be used:
+To wrap the generated CSS link tags within `<noscript>`, you can configure `cssOptions` as follows,
 
 ```php
 public $cssOptions = ['noscript' => true];
@@ -173,10 +173,42 @@ of the body section), use the following option:
 public $jsOptions = ['position' => \yii\web\View::POS_HEAD];
 ```
 
+By default, when an asset bundle is being published, all contents in the directory specified by [[yii\web\AssetBundle::sourcePath]]
+will be published. You can customize this behavior by configuring the [[yii\web\AssetBundle::publishOptions|publishOptions]] 
+property. For example, to publish only one or a few subdirectories of [[yii\web\AssetBundle::sourcePath]], 
+you can do the following in the asset bundle class:
+
+```php
+<?php
+namespace app\assets;
+
+use yii\web\AssetBundle;
+
+class FontAwesomeAsset extends AssetBundle 
+{
+    public $sourcePath = '@bower/font-awesome'; 
+    public $css = [ 
+        'css/font-awesome.min.css', 
+    ]; 
+    
+    public function init()
+    {
+        parent::init();
+        $this->publishOptions['beforeCopy'] = function ($from, $to) {
+            $dirname = basename(dirname($from));
+            return $dirname === 'fonts' || $dirname === 'css';
+        };
+    }
+}  
+```
+
+The above example defines an asset bundle for the ["fontawesome" package](http://fontawesome.io/). By specifying 
+the `beforeCopy` publishing option, only the `fonts` and `css` subdirectories will be published.
+
 
 ### Bower and NPM Assets <a name="bower-npm-assets"></a>
 
-Most JavaScript/CSS package are managed by [Bower](http://bower.io/) and/or [NPM](https://www.npmjs.org/).
+Most JavaScript/CSS packages are managed by [Bower](http://bower.io/) and/or [NPM](https://www.npmjs.org/).
 If your application or extension is using such a package, it is recommended that you follow these steps to manage
 the assets in the library:
 
@@ -208,9 +240,9 @@ AppAsset::register($this);  // $this represents the view object
 If you are registering an asset bundle in other places, you should provide the needed view object. For example,
 to register an asset bundle in a [widget](structure-widgets.md) class, you can get the view object by `$this->view`.
 
-When an asset bundle is registered with a view, behind the scene Yii will register all its dependent asset bundles.
+When an asset bundle is registered with a view, behind the scenes Yii will register all its dependent asset bundles.
 And if an asset bundle is located in a directory inaccessible through the Web, it will be published to a Web directory.
-Later when the view renders a page, it will generate `<link>` and `<script>` tags for the CSS and JavaScript files
+Later, when the view renders a page, it will generate `<link>` and `<script>` tags for the CSS and JavaScript files
 listed in the registered bundles. The order of these tags is determined by the dependencies among
 the registered bundles and the order of the assets listed in the [[yii\web\AssetBundle::css]] and [[yii\web\AssetBundle::js]]
 properties.
@@ -259,7 +291,7 @@ be the corresponding [configuration arrays](concept-configurations.md).
 
 You can disable one or multiple asset bundles by associating `false` with the names of the asset bundles
 that you want to disable. When you register a disabled asset bundle with a view, none of its dependent bundles
-will be registered, and the view will also not include any of the assets in the bundle in the page it renders.
+will be registered, and the view also will not include any of the assets in the bundle in the page it renders.
 For example, to disable [[yii\web\JqueryAsset]], you can use the following configuration:
 
 ```php
@@ -280,8 +312,8 @@ You can also disable *all* asset bundles by setting [[yii\web\AssetManager::bund
 
 ### Asset Mapping <a name="asset-mapping"></a>
 
-Sometimes you want to "fix" incorrect/incompatible asset file paths used in multiple asset bundles. For example,
-bundle A uses `jquery.min.js` of version 1.11.1, and bundle B uses `jquery.js` of version 2.1.1. While you can
+Sometimes you may want to "fix" incorrect/incompatible asset file paths used in multiple asset bundles. For example,
+bundle A uses `jquery.min.js` version 1.11.1, and bundle B uses `jquery.js` version 2.1.1. While you can
 fix the problem by customizing each bundle, an easier way is to use the *asset map* feature to map incorrect assets
 to the desired ones. To do so, configure the [[yii\web\AssetManager::assetMap]] property like the following:
 
@@ -301,11 +333,11 @@ return [
 The keys of [[yii\web\AssetManager::assetMap|assetMap]] are the asset names that you want to fix, and the values
 are the desired asset paths. When you register an asset bundle with a view, each relative asset file in its
 [[yii\web\AssetBundle::css|css]] and [[yii\web\AssetBundle::js|js]] arrays will be examined against this map.
-If any of the keys is found to be the last part of an asset file (which is prefixed with [[yii\web\AssetBundle::sourcePath]]
+If any of the keys are found to be the last part of an asset file (which is prefixed with [[yii\web\AssetBundle::sourcePath]]
 if available), the corresponding value will replace the asset and be registered with the view.
-For example, an asset file `my/path/to/jquery.js` matches a key `jquery.js`.
+For example, the asset file `my/path/to/jquery.js` matches the key `jquery.js`.
 
-> Note: Only assets specified using relative paths are subject to asset mapping. And the target asset paths
+> Note: Only assets specified using relative paths are subject to asset mapping. The target asset paths
   should be either absolute URLs or paths relative to [[yii\web\AssetManager::basePath]].
 
 
@@ -345,7 +377,7 @@ be referenced in your application or extension code.
 
 - [[yii\web\YiiAsset]]: It mainly includes the `yii.js` file which implements a mechanism of organizing JavaScript code
   in modules. It also provides special support for `data-method` and `data-confirm` attributes and other useful features.
-- [[yii\web\JqueryAsset]]: It includes the `jquery.js` file from the jQuery bower package.
+- [[yii\web\JqueryAsset]]: It includes the `jquery.js` file from the jQuery Bower package.
 - [[yii\bootstrap\BootstrapAsset]]: It includes the CSS file from the Twitter Bootstrap framework.
 - [[yii\bootstrap\BootstrapPluginAsset]]: It includes the JavaScript file from the Twitter Bootstrap framework for
   supporting Bootstrap JavaScript plugins.
@@ -362,8 +394,7 @@ Instead of directly writing CSS and/or JavaScript code, developers often write t
 use special tools to convert it into CSS/JavaScript. For example, for CSS code you may use [LESS](http://lesscss.org/)
 or [SCSS](http://sass-lang.com/); and for JavaScript you may use [TypeScript](http://www.typescriptlang.org/).
 
-You can list the asset files in extended syntax in [[yii\web\AssetBundle::css|css]] and [[yii\web\AssetBundle::js|js]]
-in an asset bundle. For example,
+You can list the asset files in extended syntax in the [[yii\web\AssetBundle::css|css]] and [[yii\web\AssetBundle::js|js]] properties of an asset bundle. For example,
 
 ```php
 class AppAsset extends AssetBundle
@@ -419,7 +450,7 @@ return [
 ];
 ```
 
-In the above we specify the supported extended syntax via the [[yii\web\AssetConverter::commands]] property.
+In the above, we specify the supported extended syntax via the [[yii\web\AssetConverter::commands]] property.
 The array keys are the file extension names (without leading dot), and the array values are the resulting
 asset file extension names and the commands for performing the asset conversion. The tokens `{from}` and `{to}`
 in the commands will be replaced with the source asset file paths and the target asset file paths.
@@ -437,12 +468,12 @@ download size of these files, a common practice is to combine and compress multi
 one or very few files, and then include these compressed files instead of the original ones in the Web pages.  
  
 > Info: Combining and compressing assets is usually needed when an application is in production mode. 
-  In development mode, using the original CSS/JavaScript files is often more convenient for debugging purpose.
+  In development mode, using the original CSS/JavaScript files is often more convenient for debugging purposes.
 
-In the following, we introduce an approach to combine and compress asset files without the need of modifying
+In the following, we introduce an approach to combine and compress asset files without the need to modify
 your existing application code.
 
-1. Find out all asset bundles in your application that you plan to combine and compress.
+1. Find all the asset bundles in your application that you plan to combine and compress.
 2. Divide these bundles into one or a few groups. Note that each bundle can only belong to a single group.
 3. Combine/compress the CSS files in each group into a single file. Do this similarly for the JavaScript files.
 4. Define a new asset bundle for each group:
@@ -461,14 +492,14 @@ asset files are included in the page, instead of the original ones.
 
 Let's use an example to further explain the above approach. 
 
-Assume your application has two pages X and Y. Page X uses asset bundle A, B and C, while Page Y uses asset bundle B, C and D. 
+Assume your application has two pages, X and Y. Page X uses asset bundles A, B and C, while Page Y uses asset bundles B, C and D. 
 
 You have two ways to divide these asset bundles. One is to use a single group to include all asset bundles, the
-other is to put (A, B, C) in Group X, and (B, C, D) in Group Y. Which one is better? It depends. The first way
+other is to put A in Group X, D in Group Y, and (B, C) in Group S. Which one is better? It depends. The first way
 has the advantage that both pages share the same combined CSS and JavaScript files, which makes HTTP caching
 more effective. On the other hand, because the single group contains all bundles, the size of the combined CSS and 
-JavaScript files will be bigger and thus increase the initial file transmission time. In this example, we will use 
-the first way, i.e., use a single group to contain all bundles.
+JavaScript files will be bigger and thus increase the initial file transmission time. For simplicity in this example, 
+we will use the first way, i.e., use a single group to contain all bundles.
 
 > Info: Dividing asset bundles into groups is not trivial task. It usually requires analysis about the real world
   traffic data of various assets on different pages. At the beginning, you may start with a single group for simplicity. 
@@ -481,7 +512,7 @@ from C and D, followed by B and finally A.
 
 After combining and compressing, we get one CSS file and one JavaScript file. Assume they are named as 
 `all-xyz.css` and `all-xyz.js`, where `xyz` stands for a timestamp or a hash that is used to make the file name unique
-to avoid HTTP caching problem.
+to avoid HTTP caching problems.
  
 We are at the last step now. Configure the [[yii\web\AssetManager|asset manager]] as follows in the application
 configuration:
@@ -590,9 +621,9 @@ JavaScript files are combined, compressed and written to `js/all-{hash}.js` wher
 the resulting file.
 
 The `jsCompressor` and `cssCompressor` options specify the console commands or PHP callbacks for performing
-JavaScript and CSS combining/compressing. By default Yii uses [Closure Compiler](https://developers.google.com/closure/compiler/) 
+JavaScript and CSS combining/compressing. By default, Yii uses [Closure Compiler](https://developers.google.com/closure/compiler/) 
 for combining JavaScript files and [YUI Compressor](https://github.com/yui/yuicompressor/) for combining CSS files. 
-You should install tools manually or adjust these options to use your favorite tools.
+You should install those tools manually or adjust these options to use your favorite tools.
 
 
 With the configuration file, you can run the `asset` command to combine and compress the asset files

@@ -17,7 +17,7 @@ If you do not have [Composer](http://getcomposer.org/), follow the instructions 
 
 With Composer installed, you can then install the application using the following commands:
 
-    composer global require "fxp/composer-asset-plugin:1.0.0-beta3"
+    composer global require "fxp/composer-asset-plugin:1.0.0-beta4"
     composer create-project --prefer-dist yiisoft/yii2-app-advanced yii-application
 
 The first command installs the [composer asset plugin](https://github.com/francoispluchino/composer-asset-plugin/)
@@ -50,6 +50,8 @@ the installed application. You only need to do these once for all.
 - for frontend `/path/to/yii-application/frontend/web/` and using the URL `http://frontend/`
 - for backend `/path/to/yii-application/backend/web/` and using the URL `http://backend/`
 
+To login into the application, you need to first sign up, with any of your email address, username and password. Then, you can login into the application with same email address and password at any time.
+
 Directory structure
 -------------------
 
@@ -65,8 +67,8 @@ Root directory contains a set of files.
 
 - `.gitignore` contains a list of directories ignored by git version system. If you need something never get to your source
   code repository, add it there.
-- `composer.json` - Composer config described in detail below.
-- `init` - initialization script described in "Composer config described in detail below".
+- `composer.json` - Composer config described in "Configuring Composer" below.
+- `init` - initialization script described in "Configuration and environments" below.
 - `init.bat` - same for Windows.
 - `LICENSE.md` - license info. Put your project license there. Especially when opensourcing.
 - `README.md` - basic info about installing template. Consider replacing it with information about your project and its

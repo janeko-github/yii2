@@ -17,7 +17,7 @@ An event handler is a [PHP callback](http://www.php.net/manual/en/language.types
 when the event it is attached to is triggered. You can use any of the following callbacks:
 
 - a global PHP function specified as a string (without parentheses), e.g., `'trim'`;
-- an object method specified as an array of an object and a method name as a string (without parenthess), e.g., `[$object, 'methodName']`;
+- an object method specified as an array of an object and a method name as a string (without parentheses), e.g., `[$object, 'methodName']`;
 - a static class method specified as an array of a class name and a method name as a string (without parentheses), e.g., `[$class, 'methodName']`;
 - an anonymous function, e.g., `function ($event) { ... }`.
 
@@ -131,8 +131,8 @@ With the above code, any calls to `bar()` will trigger an event named `hello`.
 Sometimes when triggering an event you may want to pass along additional information to the event handlers.
 For example, a mailer may want pass the message information to the handlers of the `messageSent` event so that the handlers
 can know the particulars of the sent messages. To do so, you can provide an event object as the second parameter to
-the [[yii\base\Component::trigger()]] method. The event object must be an instance of the [[yii\base\Event]] class,
-or of a child class. For example:
+the [[yii\base\Component::trigger()]] method. The event object must be an instance of the [[yii\base\Event]] class
+or a child class. For example:
 
 ```php
 namespace app\components;

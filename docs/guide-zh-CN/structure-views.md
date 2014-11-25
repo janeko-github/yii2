@@ -218,7 +218,7 @@ echo \Yii::$app->view->renderFile('@app/views/site/license.php');
   例如 `//site/about` 对应到 `@app/views/site/about.php`。
 * 视图名以单斜杠`/`开始，视图文件路径以当前使用[模块](structure-modules.md) 的[[yii\base\Module::viewPath|view path]]开始，
   如果不存在模块，使用`@app/views/ViewName`开始，例如，如果当前模块为`user`， `/user/create` 对应成
-  `@app/modules/user/views/user/create.php`, 如果在模块中，`/user/create`对应`@app/views/user/create.php`。
+  `@app/modules/user/views/user/create.php`, 如果不在模块中，`/user/create`对应`@app/views/user/create.php`。
 * 如果 [[yii\base\View::context|context]] 渲染视图 并且上下文实现了 [[yii\base\ViewContextInterface]],
   视图文件路径由上下文的 [[yii\base\ViewContextInterface::getViewPath()|view path]] 开始，
   这种主要用在控制器和小部件中渲染视图，例如
@@ -610,7 +610,7 @@ $this->registerLinkTag([
 
 ## 渲染静态页面 <a name="rendering-static-pages"></a>
 
-静态页面值得是大部分内容为静态的不需要控制器传递动态数据的Web页面。
+静态页面指的是大部分内容为静态的不需要控制器传递动态数据的Web页面。
 
 可将HTML代码放置在视图中，在控制器中使用以下代码输出静态页面：
 
